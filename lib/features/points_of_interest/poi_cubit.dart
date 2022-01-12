@@ -1,43 +1,98 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
 
 class PoiCubit extends Cubit<PoiState> {
   PoiCubit({required PoiSource dataSource})
       : _dataSource = dataSource,
-        super(const LoadingState(oldPois: <PointOfInterest>[]));
+        super(const InitialState());
 
   final PoiSource _dataSource;
 
+  Future<void> firstLoad() async {
+    final pos = await LocationSource().getCurrentPosition();
+    reloadPois(PoiLocationArgument(latLng: pos));
+  }
+
   Future<void> reloadPois(PoiLocationArgument argument) async {
-    emit(LoadingState(oldPois: state.pois));
+    emit(LoadingState(oldPois: state.pois, argument: argument));
     final newPois = await _dataSource.getPointsOfInterest(argument);
-    emit(FreshDataState(pois: newPois));
+    emit(FreshDataState(pois: newPois, argument: argument));
+  }
+
+  Future<void> changeArgument(PoiLocationArgument argument) async {
+    emit(ChangedArgumentState(pois: state.pois, argument: argument));
+  }
+
+  Future<void> selectPoi(PointOfInterest poi) async {
+    if (state is PoiStateWithArgument) {
+      final argument = (state as PoiStateWithArgument).argument;
+      emit(SelectedPoiState(
+          selected: poi, pois: state.pois, argument: argument));
+    }
+  }
+
+  Future<void> unselectPoi() async {
+    if (state is SelectedPoiState) {
+      final argument = (state as PoiStateWithArgument).argument;
+      emit(UnselectedPoiState(pois: state.pois, argument: argument));
+    }
   }
 }
 
 abstract class PoiState {
-  const PoiState({required this.pois});
-
   final List<PointOfInterest> pois;
-  //final PoiLocationArgument argument;
+
+  const PoiState({required this.pois});
 }
 
-// we are showing oldPois to not to break the experience
-class LoadingState extends PoiState {
-  const LoadingState({required List<PointOfInterest> oldPois})
-      : super(pois: oldPois);
+class InitialState extends PoiState {
+  const InitialState() : super(pois: const <PointOfInterest>[]);
 }
 
-class FreshDataState extends PoiState {
-  const FreshDataState({required List<PointOfInterest> pois})
+abstract class PoiStateWithArgument extends PoiState {
+  final PoiLocationArgument argument;
+  const PoiStateWithArgument(
+      {required List<PointOfInterest> pois, required this.argument})
       : super(pois: pois);
 }
 
-// class PoiSelectedState extends FreshDataState {
-//   const PoiSelectedState(
-//       {required this.poi, required List<PointOfInterest> pois})
-//       : super(pois: pois);
+// we are showing oldPois to not to break the experience
+class LoadingState extends PoiStateWithArgument {
+  const LoadingState(
+      {required List<PointOfInterest> oldPois,
+      required PoiLocationArgument argument})
+      : super(pois: oldPois, argument: argument);
+}
 
-//   final PointOfInterest poi;
-// }
+class FreshDataState extends PoiStateWithArgument {
+  const FreshDataState(
+      {required List<PointOfInterest> pois,
+      required PoiLocationArgument argument})
+      : super(pois: pois, argument: argument);
+}
+
+class ChangedArgumentState extends PoiStateWithArgument {
+  const ChangedArgumentState(
+      {required List<PointOfInterest> pois,
+      required PoiLocationArgument argument})
+      : super(pois: pois, argument: argument);
+}
+
+class UnselectedPoiState extends PoiStateWithArgument {
+  const UnselectedPoiState(
+      {required List<PointOfInterest> pois,
+      required PoiLocationArgument argument})
+      : super(pois: pois, argument: argument);
+}
+
+class SelectedPoiState extends PoiStateWithArgument {
+  const SelectedPoiState(
+      {required this.selected,
+      required List<PointOfInterest> pois,
+      required PoiLocationArgument argument})
+      : super(pois: pois, argument: argument);
+
+  final PointOfInterest selected;
+}

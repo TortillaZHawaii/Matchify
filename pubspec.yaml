@@ -45,6 +45,9 @@ dependencies:
   # Location
   location: ^4.2.0
 
+  # Sharing
+  share_plus: ^3.0.4
+
   # Bloc
   flutter_bloc: ^8.0.0
 

@@ -30,6 +30,10 @@ class PoiFilters extends StatelessWidget {
               onSelected: (_) {},
             ),
           ),
+          // ActionChip(
+          //   label: Text(argument.order.name),
+          //   onPressed: () {},
+          // ),
         ],
       ),
     );
