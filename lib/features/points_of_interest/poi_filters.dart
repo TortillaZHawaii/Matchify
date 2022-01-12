@@ -30,12 +30,70 @@ class PoiFilters extends StatelessWidget {
               onSelected: (_) {},
             ),
           ),
+          PopupMenuButton(
+            child: Chip(
+              label: Row(
+                children: [
+                  Text(argument.order.name),
+                  const Icon(Icons.arrow_drop_down),
+                ],
+              ),
+            ),
+            itemBuilder: (context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                child: ListTile(
+                  leading: IsSelectedIcon(
+                    isSelected: argument.order == PoiOrder.distance,
+                  ),
+                  title: const Text('Distance'),
+                ),
+              ),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: IsSelectedIcon(
+                    isSelected: argument.order == PoiOrder.name,
+                  ),
+                  title: const Text('Name'),
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: IsSelectedIcon(
+                    isSelected: !argument.isDescending,
+                  ),
+                  title: const Text('Ascending'),
+                ),
+              ),
+              PopupMenuItem(
+                child: ListTile(
+                  leading: IsSelectedIcon(
+                    isSelected: argument.isDescending,
+                  ),
+                  title: const Text('Descending'),
+                ),
+              ),
+            ],
+          ),
           // ActionChip(
           //   label: Text(argument.order.name),
           //   onPressed: () {},
           // ),
         ],
       ),
+    );
+  }
+}
+
+class IsSelectedIcon extends StatelessWidget {
+  final bool isSelected;
+
+  const IsSelectedIcon({Key? key, required this.isSelected}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      isSelected ? Icons.check : null,
     );
   }
 }
@@ -74,34 +132,4 @@ class SportChip extends FilterChip {
             avatar: Icon(SportsIconFactory.getIconData(sport)),
             selected: selectedSports.contains(sport),
             onSelected: onSelected);
-}
-
-class FloatingChip extends StatelessWidget {
-  const FloatingChip({
-    Key? key,
-    required this.text,
-    this.icon,
-    this.onTap,
-    required this.highlighted,
-  }) : super(key: key);
-
-  final String text;
-  final Icon? icon;
-  final GestureTapCallback? onTap;
-  final bool highlighted;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Chip(
-        backgroundColor: highlighted
-            ? Theme.of(context).colorScheme.secondary
-            : Theme.of(context).colorScheme.surface,
-        elevation: 1.0,
-        avatar: icon,
-        label: Text(text),
-      ),
-    );
-  }
 }

@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/features/auth/auth_cubit.dart';
+import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_details.dart';
 import 'package:matchify/features/points_of_interest/poi_filters.dart';
@@ -35,21 +36,7 @@ class _PoiMapState extends State<PoiMap> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Matchify'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: const Text('Logout'),
-              onTap: () {
-                BlocProvider.of<AuthCubit>(context).signOut();
-              },
-            )
-          ],
-        ),
-      ),
+      appBar: PoiAppBar(),
       body: Stack(
         children: [
           GoogleMap(
@@ -106,7 +93,7 @@ class _PoiMapState extends State<PoiMap> {
                   child: FloatingActionButton(
                     onPressed: () => _setMapToCurrentLocation(),
                     child: Icon(
-                      Icons.my_location,
+                      Icons.location_searching,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     backgroundColor: Theme.of(context).colorScheme.surface,
@@ -156,7 +143,9 @@ class _PoiMapState extends State<PoiMap> {
   void _setMapToCurrentLocation() async {
     final locationSource = LocationSource();
     try {
+      // start animation
       final newPosition = await locationSource.getCurrentPosition();
+      // stop animation
       _setMapToLocation(newPosition);
     } on PermissionDeniedException {
       final permissions = await locationSource.requestPermission();

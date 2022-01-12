@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
+import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_filters.dart';
 import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
-
-import 'poi_filter_page.dart';
 
 class PoiList extends StatelessWidget {
   final List<PointOfInterest> pois;
@@ -17,12 +16,8 @@ class PoiList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        //  Scaffold(
-        //     body: SafeArea(
-        //         child: PoiFilter(
-        //             argument: PoiLocationArgument(latLng: LatLng(0, 0)))));
-        Scaffold(
+    return Scaffold(
+      appBar: PoiAppBar(),
       body: SafeArea(
         child: Column(
           children: [
@@ -41,7 +36,10 @@ class PoiList extends StatelessWidget {
                     ),
                   );
                 },
-                separatorBuilder: (context, index) => const Divider(),
+                separatorBuilder: (context, index) => const Divider(
+                  indent: 16.0,
+                  endIndent: 16.0,
+                ),
                 itemCount: pois.length,
               ),
             ),
