@@ -21,6 +21,7 @@ class PointOfInterest {
       required this.name,
       required this.latLng,
       required this.sport,
+      this.busyiness,
       this.address});
 
   PointOfInterest.fromJson(String id, Map<String, Object?> json)
@@ -29,8 +30,23 @@ class PointOfInterest {
           name: json['name']! as String,
           latLng: _getLatLngFromGeoPoint(json['latLng']! as GeoPoint),
           sport: SportsFactory.getSports(json['sport']! as String),
+          busyiness: _getBusyness(
+              json['busyness'] != null ? json['busyness']! as String : null),
           address: json['address'] as String?,
         );
+
+  static Busyness? _getBusyness(String? s) {
+    switch (s) {
+      case 'free':
+        return Busyness.free;
+      case 'moderate':
+        return Busyness.moderate;
+      case 'busy':
+        return Busyness.busy;
+      default:
+        return null;
+    }
+  }
 
   static LatLng _getLatLngFromGeoPoint(GeoPoint point) {
     return LatLng(point.latitude, point.longitude);

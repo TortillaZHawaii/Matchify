@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/model/sports.dart';
+import 'package:matchify/features/utils/string_extensions.dart';
 
 class PoiItemTile extends StatelessWidget {
   final PointOfInterest poi;
@@ -24,19 +25,24 @@ class PoiItemTile extends StatelessWidget {
         poi.name,
         style: Theme.of(context).textTheme.headline6,
       ),
-      subtitle: poi.address != null ? Text(poi.address!) : null,
+      subtitle: poi.busyiness != null
+          ? PoiItemTileSubtitle(busyness: poi.busyiness!)
+          : null,
     );
   }
 }
 
-class PoiSmallTile extends StatelessWidget {
-  final PointOfInterest poi;
+class PoiItemTileSubtitle extends StatelessWidget {
+  final Busyness busyness;
 
-  const PoiSmallTile({Key? key, required this.poi}) : super(key: key);
+  const PoiItemTileSubtitle({Key? key, required this.busyness})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Text(
+      busyness.name.capitalize(),
+    );
   }
 }
 

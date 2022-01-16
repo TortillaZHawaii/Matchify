@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/maps_launcher.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
+import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -23,7 +25,10 @@ class PoiDetails extends StatelessWidget {
                 indent: 16,
                 endIndent: 16,
               ),
-              PoiBusyness(poi: poi, key: Key(poi.latLng.toString())),
+              PoiBusyness(
+                poi: poi,
+                key: Key(poi.latLng.toString()),
+              ),
               const Divider(
                 indent: 16,
                 endIndent: 16,
@@ -90,15 +95,15 @@ class _PoiBusynessState extends State<PoiBusyness> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               TextButton(
-                onPressed: () => _selectBusyness(Busyness.free),
+                onPressed: () => _selectBusyness(Busyness.free, context),
                 child: const Text('Empty'),
               ),
               TextButton(
-                onPressed: () => _selectBusyness(Busyness.moderate),
+                onPressed: () => _selectBusyness(Busyness.moderate, context),
                 child: const Text('Moderate'),
               ),
               TextButton(
-                onPressed: () => _selectBusyness(Busyness.busy),
+                onPressed: () => _selectBusyness(Busyness.busy, context),
                 child: const Text('Busy'),
               ),
             ],
@@ -108,9 +113,12 @@ class _PoiBusynessState extends State<PoiBusyness> {
     }
   }
 
-  void _selectBusyness(Busyness busyness) {
+  void _selectBusyness(Busyness busyness, BuildContext context) {
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
     setState(() {
       _isAlreadySelected = true;
+      poiCubit.setBusyness(widget.poi, busyness);
     });
   }
 }

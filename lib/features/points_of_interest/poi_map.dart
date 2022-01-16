@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
+import 'package:matchify/features/points_of_interest/poi_create_card.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_details.dart';
 import 'package:matchify/features/points_of_interest/poi_filters.dart';
@@ -26,6 +27,9 @@ class _PoiMapState extends State<PoiMap> {
   GoogleMapController? _controller;
   CameraPosition _cameraPosition = const CameraPosition(target: LatLng(0, 0));
 
+  bool _isSatelliteView = false;
+  LatLng? _creatingPoiPosition = null;
+
   final double _zoom = 15;
 
   @override
@@ -37,11 +41,20 @@ class _PoiMapState extends State<PoiMap> {
     final poiCubit = BlocProvider.of<PoiCubit>(context);
 
     return Scaffold(
-      appBar: PoiAppBar(),
+      appBar: PoiAppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.layers),
+            onPressed: () => setState(() {
+              _isSatelliteView = !_isSatelliteView;
+            }),
+          )
+        ],
+      ),
       body: Stack(
         children: [
           GoogleMap(
-            mapType: MapType.normal,
+            mapType: _isSatelliteView ? MapType.hybrid : MapType.normal,
             initialCameraPosition: _cameraPosition,
             compassEnabled: true,
             trafficEnabled: false,
@@ -50,6 +63,7 @@ class _PoiMapState extends State<PoiMap> {
             mapToolbarEnabled: false,
             markers: _generateMarkersFromPois(widget.pois),
             onTap: (_) => _unselectPoi(),
+            onLongPress: (latLng) => _createPoi(latLng),
             onMapCreated: (controller) {
               if (_controller != controller) {
                 _controller?.dispose();
@@ -77,44 +91,64 @@ class _PoiMapState extends State<PoiMap> {
           ),
         ],
       ),
-      floatingActionButton: widget.selectedPoi != null
-          ? FloatingActionButton(
-              onPressed: _goToListView,
-              child: const Icon(Icons.list),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: FloatingActionButton(
-                    onPressed: () => _setMapToCurrentLocation(),
-                    child: Icon(
-                      Icons.location_searching,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                  ),
-                ),
-                FloatingActionButton.extended(
+      floatingActionButton:
+          widget.selectedPoi != null || _creatingPoiPosition != null
+              ? FloatingActionButton(
                   onPressed: _goToListView,
-                  label: const Text('View list'),
-                  icon: const Icon(Icons.list),
+                  child: const Icon(Icons.list),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: FloatingActionButton(
+                        onPressed: () => _setMapToCurrentLocation(),
+                        child: Icon(
+                          Icons.location_searching,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                      ),
+                    ),
+                    FloatingActionButton.extended(
+                      onPressed: _goToListView,
+                      label: const Text('View list'),
+                      icon: const Icon(Icons.list),
+                    ),
+                  ],
                 ),
-              ],
-            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      bottomSheet: widget.selectedPoi != null
-          ? Hero(
-              tag: widget.selectedPoi!.id,
-              child: PoiDetails(poi: widget.selectedPoi!),
+      bottomSheet: _creatingPoiPosition != null
+          ? PoiCreateCard(
+              position: _creatingPoiPosition!,
+              onCancel: () {
+                setState(() {
+                  _creatingPoiPosition = null;
+                });
+              },
             )
-          : null,
+          : (widget.selectedPoi != null
+              ? Hero(
+                  tag: widget.selectedPoi!.id,
+                  child: PoiDetails(poi: widget.selectedPoi!),
+                )
+              : null),
     );
   }
 
+  void _createPoi(LatLng position) {
+    setState(() {
+      _creatingPoiPosition = position;
+    });
+    _setMapToLocation(position);
+  }
+
   void _unselectPoi() {
+    setState(() {
+      _creatingPoiPosition = null;
+    });
     BlocProvider.of<PoiCubit>(context).unselectPoi();
   }
 
@@ -168,6 +202,18 @@ class _PoiMapState extends State<PoiMap> {
       final generatedMarker =
           PoiMarker(poi: poi, poiFunction: _selectAndGoToPoi);
       newMarkers.add(generatedMarker);
+    }
+
+    if (_creatingPoiPosition != null) {
+      final newMarker = Marker(
+        markerId: const MarkerId('newPoi'),
+        position: _creatingPoiPosition!,
+        draggable: true,
+        onDragEnd: (position) => setState(() {
+          _creatingPoiPosition = position;
+        }),
+      );
+      newMarkers.add(newMarker);
     }
 
     return newMarkers;

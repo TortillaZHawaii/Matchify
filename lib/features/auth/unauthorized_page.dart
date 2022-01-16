@@ -59,6 +59,13 @@ class _UnauthorizedPageState extends State<UnauthorizedPage> {
       },
     );
   }
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
 }
 
 class _SignInButton extends StatelessWidget {

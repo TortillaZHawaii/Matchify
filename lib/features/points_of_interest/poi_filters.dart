@@ -39,6 +39,10 @@ class PoiFilters extends StatelessWidget {
           OrderChip(
             argument: argument,
           ),
+          ActionChip(
+            label: Text('Refresh'),
+            onPressed: () => poiCubit.reloadAll(),
+          ),
         ],
       ),
     );

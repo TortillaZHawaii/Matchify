@@ -15,6 +15,16 @@ class PoiCubit extends Cubit<PoiState> {
     reloadPois(PoiLocationArgument(latLng: pos));
   }
 
+  Future<void> reloadAll() async {
+    if (state is! PoiStateWithArgument) {
+      return;
+    }
+
+    final arg = (state as PoiStateWithArgument).argument;
+
+    await reloadPois(arg);
+  }
+
   Future<void> reloadPois(PoiLocationArgument argument) async {
     emit(LoadingState(oldPois: state.pois, argument: argument));
     final newPois = await _dataSource.getPointsOfInterest(argument);
@@ -38,6 +48,14 @@ class PoiCubit extends Cubit<PoiState> {
       final argument = (state as PoiStateWithArgument).argument;
       emit(UnselectedPoiState(pois: state.pois, argument: argument));
     }
+  }
+
+  Future<void> addPoi(PointOfInterest poi) async {
+    await _dataSource.addPointOfInterest(poi);
+  }
+
+  Future<void> setBusyness(PointOfInterest poi, Busyness busyness) async {
+    await _dataSource.setBusyness(poi, busyness);
   }
 }
 

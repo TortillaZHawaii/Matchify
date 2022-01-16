@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
-import 'package:matchify/data/points_of_interest/poi_source.dart';
 import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_filters.dart';

@@ -7,6 +7,10 @@ import 'model/sports.dart';
 abstract class PoiSource {
   Future<List<PointOfInterest>> getPointsOfInterest(
       PoiLocationArgument argument);
+
+  Future<void> addPointOfInterest(PointOfInterest poi);
+
+  Future<void> setBusyness(PointOfInterest poi, Busyness busyness);
 }
 
 class PoiSourceFirebase extends PoiSource {
@@ -32,10 +36,13 @@ class PoiSourceFirebase extends PoiSource {
     return list;
   }
 
+  @override
   Future<void> addPointOfInterest(PointOfInterest poi) async {
+    // toJson ignores the id
     _poisRef.add(poi);
   }
 
+  @override
   Future<void> setBusyness(PointOfInterest poi, Busyness busyness) async {
     _poisRef.doc(poi.id).update({'busyness': busyness.name});
   }
