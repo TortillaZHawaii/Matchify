@@ -16,13 +16,16 @@ class PoiList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
     return Scaffold(
       appBar: PoiAppBar(),
       body: SafeArea(
         child: Column(
           children: [
             PoiFilters(
-                argument: PoiLocationArgument(latLng: const LatLng(0, 0))),
+              argument: (poiCubit.state as PoiStateWithArgument).argument,
+            ),
             Expanded(
               flex: 1,
               child: ListView.separated(

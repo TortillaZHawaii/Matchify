@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
-import 'package:matchify/features/auth/auth_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_details.dart';
@@ -35,6 +34,8 @@ class _PoiMapState extends State<PoiMap> {
       _setMapToPoi(widget.selectedPoi!);
     }
 
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
     return Scaffold(
       appBar: PoiAppBar(),
       body: Stack(
@@ -59,11 +60,8 @@ class _PoiMapState extends State<PoiMap> {
           ),
           Column(
             children: [
-              Hero(
-                tag: 'poi-filters',
-                child: PoiFilters(
-                  argument: PoiLocationArgument(latLng: _cameraPosition.target),
-                ),
+              PoiFilters(
+                argument: (poiCubit.state as PoiStateWithArgument).argument,
               ),
               // if (_needsRefreshing)
               //   Align(

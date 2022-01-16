@@ -3,11 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/features/auth/auth_cubit.dart';
 
 class PoiAppBar extends AppBar {
-  PoiAppBar({Key? key})
+  PoiAppBar({Key? key, List<Widget>? actions})
       : super(
           key: key,
           title: const Text('Matchify'),
           actions: [
+            if (actions != null) ...actions,
             PopupMenuButton(
               icon: const Icon(Icons.account_circle),
               itemBuilder: (context) => [

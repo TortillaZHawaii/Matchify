@@ -24,6 +24,10 @@ class PoiDetails extends StatelessWidget {
                 endIndent: 16,
               ),
               PoiBusyness(poi: poi, key: Key(poi.latLng.toString())),
+              const Divider(
+                indent: 16,
+                endIndent: 16,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/model/sports.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
+import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
+import 'package:matchify/features/utils/string_extensions.dart';
 
 class PoiFilters extends StatelessWidget {
   final PoiLocationArgument argument;
@@ -10,6 +13,8 @@ class PoiFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
@@ -19,7 +24,7 @@ class PoiFilters extends StatelessWidget {
             child: SportChip(
               sport: Sports.football,
               selectedSports: argument.sports,
-              onSelected: (_) {},
+              onSelected: (_) => _toggleSportInCubit(Sports.football, poiCubit),
             ),
           ),
           Padding(
@@ -27,60 +32,99 @@ class PoiFilters extends StatelessWidget {
             child: SportChip(
               sport: Sports.basketball,
               selectedSports: argument.sports,
-              onSelected: (_) {},
+              onSelected: (_) =>
+                  _toggleSportInCubit(Sports.basketball, poiCubit),
             ),
           ),
-          PopupMenuButton(
-            child: Chip(
-              label: Row(
-                children: [
-                  Text(argument.order.name),
-                  const Icon(Icons.arrow_drop_down),
-                ],
-              ),
-            ),
-            itemBuilder: (context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                child: ListTile(
-                  leading: IsSelectedIcon(
-                    isSelected: argument.order == PoiOrder.distance,
-                  ),
-                  title: const Text('Distance'),
-                ),
-              ),
-              PopupMenuItem(
-                child: ListTile(
-                  leading: IsSelectedIcon(
-                    isSelected: argument.order == PoiOrder.name,
-                  ),
-                  title: const Text('Name'),
-                ),
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                child: ListTile(
-                  leading: IsSelectedIcon(
-                    isSelected: !argument.isDescending,
-                  ),
-                  title: const Text('Ascending'),
-                ),
-              ),
-              PopupMenuItem(
-                child: ListTile(
-                  leading: IsSelectedIcon(
-                    isSelected: argument.isDescending,
-                  ),
-                  title: const Text('Descending'),
-                ),
-              ),
-            ],
+          OrderChip(
+            argument: argument,
           ),
-          // ActionChip(
-          //   label: Text(argument.order.name),
-          //   onPressed: () {},
-          // ),
         ],
       ),
+    );
+  }
+
+  void _toggleSportInCubit(Sports sport, PoiCubit poiCubit) {
+    final set = argument.sports;
+
+    if (set.contains(sport)) {
+      set.remove(sport);
+    } else {
+      set.add(sport);
+    }
+
+    poiCubit.changeArgument(argument.copyWith(sports: set));
+  }
+}
+
+class OrderChip extends StatelessWidget {
+  const OrderChip({
+    Key? key,
+    required this.argument,
+  }) : super(key: key);
+
+  final PoiLocationArgument argument;
+
+  @override
+  Widget build(BuildContext context) {
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
+    return PopupMenuButton(
+      child: Chip(
+        label: Row(
+          children: [
+            Text(argument.order.name.capitalize()),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
+      itemBuilder: (context) => <PopupMenuEntry>[
+        PopupMenuItem(
+          onTap: () => poiCubit.changeArgument(
+            argument.copyWith(order: PoiOrder.distance),
+          ),
+          child: ListTile(
+            leading: IsSelectedIcon(
+              isSelected: argument.order == PoiOrder.distance,
+            ),
+            title: const Text('Distance'),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () => poiCubit.changeArgument(
+            argument.copyWith(order: PoiOrder.name),
+          ),
+          child: ListTile(
+            leading: IsSelectedIcon(
+              isSelected: argument.order == PoiOrder.name,
+            ),
+            title: const Text('Name'),
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          onTap: () => poiCubit.changeArgument(
+            argument.copyWith(isDescending: false),
+          ),
+          child: ListTile(
+            leading: IsSelectedIcon(
+              isSelected: !argument.isDescending,
+            ),
+            title: const Text('Ascending'),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () => poiCubit.changeArgument(
+            argument.copyWith(isDescending: true),
+          ),
+          child: ListTile(
+            leading: IsSelectedIcon(
+              isSelected: argument.isDescending,
+            ),
+            title: const Text('Descending'),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -97,28 +141,6 @@ class IsSelectedIcon extends StatelessWidget {
     );
   }
 }
-
-// class SortChip extends StatelessWidget {
-//   final PoiSortArgument argument;
-
-//   const SortChip({Key? key, required this.argument}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(horizontal: 4),
-//       child: ChoiceChip(
-//         label: Text(argument.sort.toString()),
-//         selected: argument.sort == PoiSort.distance,
-//         onSelected: (selected) {
-//           if (selected) {
-//             argument.sort = PoiSort.distance;
-//           }
-//         },
-//       ),
-//     );
-//   }
-// }
 
 class SportChip extends FilterChip {
   SportChip({

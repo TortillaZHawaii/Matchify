@@ -73,6 +73,41 @@ class PoiLocationArgument {
         radius = radius ?? 0.4,
         order = order ?? PoiOrder.distance,
         isDescending = isDescending ?? true;
+
+  factory PoiLocationArgument.copyWith(
+      {required PoiLocationArgument arg,
+      LatLng? latLng,
+      String? searchText,
+      Set<Sports>? sports,
+      double? radius,
+      PoiOrder? order,
+      bool? isDescending}) {
+    return arg.copyWith(
+      latLng: latLng,
+      searchText: searchText,
+      sports: sports,
+      radius: radius,
+      order: order,
+      isDescending: isDescending,
+    );
+  }
+
+  PoiLocationArgument copyWith(
+      {LatLng? latLng,
+      String? searchText,
+      Set<Sports>? sports,
+      double? radius,
+      PoiOrder? order,
+      bool? isDescending}) {
+    return PoiLocationArgument(
+      latLng: latLng ?? this.latLng,
+      searchText: searchText ?? this.searchText,
+      sports: sports ?? this.sports,
+      radius: radius ?? this.radius,
+      order: order ?? this.order,
+      isDescending: isDescending ?? this.isDescending,
+    );
+  }
 }
 
 enum PoiOrder {
