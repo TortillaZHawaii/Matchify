@@ -44,7 +44,7 @@ class PoiSourceFirebase extends PoiSource {
     //
 
     final sports = argument.sports.asNameMap().keys.toList();
-    final busyness = argument.busyness.asNameMap().keys.toList();
+    //final busyness = argument.busyness.asNameMap().keys.toList();
 
     var query =
         _poisRef.where('sport', whereIn: sports.isNotEmpty ? sports : null);

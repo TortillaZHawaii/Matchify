@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 // Import the firebase_core plugin
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:matchify/features/points_of_interest/poi_map.dart';
 import 'package:matchify/features/theme_provider.dart';
 import 'package:matchify/features/utils/pages/error_page.dart';
 import 'package:matchify/data/auth/auth_service.dart';
@@ -17,7 +16,7 @@ import 'features/utils/pages/loading.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(App());
+  runApp(const App());
 }
 
 /// We are using a StatefulWidget such that we only create the [Future] once,

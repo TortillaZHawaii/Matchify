@@ -9,7 +9,6 @@ import 'package:matchify/features/points_of_interest/poi_create_card.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/poi_details.dart';
 import 'package:matchify/features/points_of_interest/poi_filters.dart';
-import 'package:matchify/data/points_of_interest/poi_source.dart';
 
 class PoiMap extends StatefulWidget {
   final PointOfInterest? selectedPoi;

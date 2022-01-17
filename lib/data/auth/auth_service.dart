@@ -46,11 +46,9 @@ class AuthService {
       } else if (e.code == 'wrong-password') {
         return SignInResult.wrongPassword;
       } else {
-        print(e);
         rethrow;
       }
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -73,7 +71,6 @@ class AuthService {
     } on FirebaseAuthException {
       return false;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
