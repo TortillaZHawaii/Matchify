@@ -26,22 +26,25 @@ class PoiList extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  final poi = pois[index];
-                  return Hero(
-                    tag: poi.id,
-                    child: PoiItemTile(
-                      onTap: () => _selectPoi(poi, context),
-                      poi: poi,
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(
-                  indent: 16.0,
-                  endIndent: 16.0,
+              child: RefreshIndicator(
+                onRefresh: () => poiCubit.reloadAll(),
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    final poi = pois[index];
+                    return Hero(
+                      tag: poi.id,
+                      child: PoiItemTile(
+                        onTap: () => _selectPoi(poi, context),
+                        poi: poi,
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => const Divider(
+                    indent: 16.0,
+                    endIndent: 16.0,
+                  ),
+                  itemCount: pois.length,
                 ),
-                itemCount: pois.length,
               ),
             ),
           ],

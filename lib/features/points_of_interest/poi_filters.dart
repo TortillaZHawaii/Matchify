@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/model/sports.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
@@ -36,12 +37,17 @@ class PoiFilters extends StatelessWidget {
                   _toggleSportInCubit(Sports.basketball, poiCubit),
             ),
           ),
-          OrderChip(
-            argument: argument,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: OrderChip(
+              argument: argument,
+            ),
           ),
-          ActionChip(
-            label: Text('Refresh'),
-            onPressed: () => poiCubit.reloadAll(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: BusyChip(
+              argument: argument,
+            ),
           ),
         ],
       ),
@@ -61,13 +67,89 @@ class PoiFilters extends StatelessWidget {
   }
 }
 
-class OrderChip extends StatelessWidget {
-  const OrderChip({
+class BusyChip extends StatelessWidget {
+  final PoiLocationArgument argument;
+
+  const BusyChip({
     Key? key,
     required this.argument,
   }) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    final poiCubit = BlocProvider.of<PoiCubit>(context);
+
+    return PopupMenuButton(
+      child: Chip(
+        label: Row(
+          children: const [
+            Text('Busyness'),
+            Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
+      itemBuilder: (ctx) => <PopupMenuEntry>[
+        for (final busyness in Busyness.values)
+          PopupMenuItem(
+            onTap: () {
+              _toggleBusyInCubit(busyness, poiCubit);
+            },
+            child: SelectableTile(
+              isSelected: argument.busyness.contains(busyness),
+              title: busyness.name.capitalize(),
+            ),
+          ),
+        // PopupMenuItem(
+        //   onTap: () {
+        //     _toggleBusyInCubit(Busyness.busy, poiCubit);
+        //   },
+        //   child: SelectableTile(
+        //     isSelected: argument.busyness.contains(Busyness.busy),
+        //     title: 'Busy',
+        //   ),
+        // ),
+        // PopupMenuItem(
+        //   onTap: () {
+        //     _toggleBusyInCubit(Busyness.moderate, poiCubit);
+        //   },
+        //   child: SelectableTile(
+        //     isSelected: argument.busyness.contains(Busyness.moderate),
+        //     title: 'Moderate',
+        //   ),
+        // ),
+        // PopupMenuItem(
+        //   onTap: () {
+        //     _toggleBusyInCubit(Busyness.free, poiCubit);
+        //   },
+        //   child: SelectableTile(
+        //     isSelected: argument.busyness.contains(Busyness.free),
+        //     title: 'Empty',
+        //   ),
+        // ),
+      ],
+    );
+  }
+
+  void _toggleBusyInCubit(Busyness busy, PoiCubit poiCubit) {
+    final set = argument.busyness;
+
+    if (set.contains(busy)) {
+      set.remove(busy);
+    } else {
+      set.add(busy);
+    }
+
+    poiCubit.changeArgument(argument.copyWith(busyness: set));
+  }
+}
+
+class OrderChip extends StatelessWidget {
   final PoiLocationArgument argument;
+
+  const OrderChip({
+    Key? key,
+    required this.argument,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,22 +169,18 @@ class OrderChip extends StatelessWidget {
           onTap: () => poiCubit.changeArgument(
             argument.copyWith(order: PoiOrder.distance),
           ),
-          child: ListTile(
-            leading: IsSelectedIcon(
-              isSelected: argument.order == PoiOrder.distance,
-            ),
-            title: const Text('Distance'),
+          child: SelectableTile(
+            title: 'Distance',
+            isSelected: argument.order == PoiOrder.distance,
           ),
         ),
         PopupMenuItem(
           onTap: () => poiCubit.changeArgument(
             argument.copyWith(order: PoiOrder.name),
           ),
-          child: ListTile(
-            leading: IsSelectedIcon(
-              isSelected: argument.order == PoiOrder.name,
-            ),
-            title: const Text('Name'),
+          child: SelectableTile(
+            title: 'Name',
+            isSelected: argument.order == PoiOrder.name,
           ),
         ),
         const PopupMenuDivider(),
@@ -110,25 +188,42 @@ class OrderChip extends StatelessWidget {
           onTap: () => poiCubit.changeArgument(
             argument.copyWith(isDescending: false),
           ),
-          child: ListTile(
-            leading: IsSelectedIcon(
-              isSelected: !argument.isDescending,
-            ),
-            title: const Text('Ascending'),
+          child: SelectableTile(
+            title: 'Ascending',
+            isSelected: !argument.isDescending,
           ),
         ),
         PopupMenuItem(
           onTap: () => poiCubit.changeArgument(
             argument.copyWith(isDescending: true),
           ),
-          child: ListTile(
-            leading: IsSelectedIcon(
-              isSelected: argument.isDescending,
-            ),
-            title: const Text('Descending'),
+          child: SelectableTile(
+            title: 'Descending',
+            isSelected: argument.isDescending,
           ),
         ),
       ],
+    );
+  }
+}
+
+class SelectableTile extends StatelessWidget {
+  final String title;
+  final bool isSelected;
+
+  const SelectableTile({
+    Key? key,
+    required this.title,
+    required this.isSelected,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: IsSelectedIcon(
+        isSelected: isSelected,
+      ),
+      title: Text(title),
     );
   }
 }

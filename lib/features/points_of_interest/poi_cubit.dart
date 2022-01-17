@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
@@ -33,6 +34,17 @@ class PoiCubit extends Cubit<PoiState> {
 
   Future<void> changeArgument(PoiLocationArgument argument) async {
     emit(ChangedArgumentState(pois: state.pois, argument: argument));
+    reloadPois(argument);
+  }
+
+  Future<void> changeLatLng(LatLng newPosition) async {
+    if (state is PoiStateWithArgument) {
+      final arg = (state as PoiStateWithArgument).argument;
+      emit(ChangedArgumentState(
+        pois: state.pois,
+        argument: arg.copyWith(latLng: newPosition),
+      ));
+    }
   }
 
   Future<void> selectPoi(PointOfInterest poi) async {

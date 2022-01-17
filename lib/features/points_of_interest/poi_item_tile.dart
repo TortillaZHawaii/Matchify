@@ -25,8 +25,8 @@ class PoiItemTile extends StatelessWidget {
         poi.name,
         style: Theme.of(context).textTheme.headline6,
       ),
-      subtitle: poi.busyiness != null
-          ? PoiItemTileSubtitle(busyness: poi.busyiness!)
+      subtitle: poi.busyiness != Busyness.unknown
+          ? PoiItemTileSubtitle(busyness: poi.busyiness)
           : null,
     );
   }

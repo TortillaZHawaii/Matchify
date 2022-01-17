@@ -28,7 +28,7 @@ class _PoiMapState extends State<PoiMap> {
   CameraPosition _cameraPosition = const CameraPosition(target: LatLng(0, 0));
 
   bool _isSatelliteView = false;
-  LatLng? _creatingPoiPosition = null;
+  LatLng? _creatingPoiPosition;
 
   final double _zoom = 15;
 

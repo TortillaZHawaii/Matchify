@@ -26,10 +26,30 @@ class PoiSourceFirebase extends PoiSource {
   @override
   Future<List<PointOfInterest>> getPointsOfInterest(
       PoiLocationArgument argument) async {
+    //
+    // Firebase rant:
+    //
+    // There can only be one whereIn in the query which blocks the ability to
+    // filter by sport and busyness at the same time.
+    // https://stackoverflow.com/questions/62968079/can-you-use-the-wherein-condition-twice-in-a-compound-query
+    //
+    // GeoPoint is a wrapper around a latitude and longitude only.
+    // There aren't any operators for GeoPoint, like sorting by distance or
+    // querying points within a radius.
+    // https://stackoverflow.com/questions/47365000/sort-array-by-distance-near-user-location-from-firebase
+    //
+    // I leave the capabilites in UI, although they don't work with Firebase.
+    // This could be done with MongoDB. But since this subject is oriented
+    // around mobile, I don't want to implement it now.
+    //
+
     final sports = argument.sports.asNameMap().keys.toList();
+    final busyness = argument.busyness.asNameMap().keys.toList();
 
     final docs = await _poisRef
+        //.where('busyness', whereIn: busyness)
         .where('sport', whereIn: sports.isNotEmpty ? sports : null)
+        .orderBy('name', descending: argument.isDescending)
         .get()
         .then((snapshot) => snapshot.docs);
 
@@ -74,20 +94,30 @@ class PoiLocationArgument {
   /// Order of sorting.
   final bool isDescending; // = true;
 
-  PoiLocationArgument(
-      {required this.latLng,
-      this.searchText,
-      Set<Sports>? sports,
-      double? radius,
-      PoiOrder? order,
-      bool? isDescending})
-      : sports = sports ?? {},
+  final Set<Busyness> busyness;
+
+  PoiLocationArgument({
+    required this.latLng,
+    this.searchText,
+    Set<Sports>? sports,
+    double? radius,
+    PoiOrder? order,
+    bool? isDescending,
+    Set<Busyness>? busyness,
+  })  : sports = sports ?? {},
+        busyness = busyness ??
+            {
+              Busyness.free,
+              Busyness.moderate,
+              Busyness.busy,
+            },
         radius = radius ?? 0.4,
         order = order ?? PoiOrder.distance,
         isDescending = isDescending ?? true;
 
   factory PoiLocationArgument.copyWith(
       {required PoiLocationArgument arg,
+      Set<Busyness>? busyness,
       LatLng? latLng,
       String? searchText,
       Set<Sports>? sports,
@@ -95,6 +125,7 @@ class PoiLocationArgument {
       PoiOrder? order,
       bool? isDescending}) {
     return arg.copyWith(
+      busyness: busyness,
       latLng: latLng,
       searchText: searchText,
       sports: sports,
@@ -108,6 +139,7 @@ class PoiLocationArgument {
       {LatLng? latLng,
       String? searchText,
       Set<Sports>? sports,
+      Set<Busyness>? busyness,
       double? radius,
       PoiOrder? order,
       bool? isDescending}) {
@@ -115,6 +147,7 @@ class PoiLocationArgument {
       latLng: latLng ?? this.latLng,
       searchText: searchText ?? this.searchText,
       sports: sports ?? this.sports,
+      busyness: busyness ?? this.busyness,
       radius: radius ?? this.radius,
       order: order ?? this.order,
       isDescending: isDescending ?? this.isDescending,
