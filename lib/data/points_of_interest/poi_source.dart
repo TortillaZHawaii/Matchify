@@ -46,12 +46,15 @@ class PoiSourceFirebase extends PoiSource {
     final sports = argument.sports.asNameMap().keys.toList();
     final busyness = argument.busyness.asNameMap().keys.toList();
 
-    final docs = await _poisRef
-        //.where('busyness', whereIn: busyness)
-        .where('sport', whereIn: sports.isNotEmpty ? sports : null)
-        .orderBy('name', descending: argument.isDescending)
-        .get()
-        .then((snapshot) => snapshot.docs);
+    var query =
+        _poisRef.where('sport', whereIn: sports.isNotEmpty ? sports : null);
+    //.where('busyness', whereIn: busyness);
+
+    if (argument.order == PoiOrder.name) {
+      query = query.orderBy('name', descending: argument.isDescending);
+    }
+
+    final docs = await query.get().then((snapshot) => snapshot.docs);
 
     final list = <PointOfInterest>[];
     for (final doc in docs) {

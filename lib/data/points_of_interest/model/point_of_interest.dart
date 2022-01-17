@@ -59,7 +59,7 @@ class PointOfInterest {
       'latLng': GeoPoint(latLng.latitude, latLng.longitude),
       'sport': sport.name,
       'name': name,
-      'busyness': busyiness.toString(),
+      'busyness': busyiness.name,
       if (address != null) 'address': address,
     };
   }

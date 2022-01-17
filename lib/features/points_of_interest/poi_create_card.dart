@@ -19,9 +19,15 @@ class PoiCreateCard extends StatefulWidget {
   _PoiCreateCardState createState() => _PoiCreateCardState();
 }
 
+enum _TextFieldError {
+  tooShort,
+  tooLong,
+}
+
 class _PoiCreateCardState extends State<PoiCreateCard> {
   final nameController = TextEditingController();
   List<bool> isSelected = [true, false, false];
+  _TextFieldError? _error;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +51,11 @@ class _PoiCreateCardState extends State<PoiCreateCard> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Name',
+                    errorText: _getErrorText(),
                   ),
+                  onSubmitted: _validateName,
                 ),
               ),
               Padding(
@@ -96,7 +104,8 @@ class _PoiCreateCardState extends State<PoiCreateCard> {
 
   void _createPoi(BuildContext context) async {
     final name = nameController.text;
-    if (name.isEmpty) {
+    _validateName(name);
+    if (_error != null) {
       return;
     }
     final sportIndex = isSelected.indexOf(true);
@@ -120,5 +129,28 @@ class _PoiCreateCardState extends State<PoiCreateCard> {
   void dispose() {
     nameController.dispose();
     super.dispose();
+  }
+
+  void _validateName(String name) {
+    setState(() {
+      if (name.length < 3) {
+        _error = _TextFieldError.tooShort;
+      } else if (name.length > 30) {
+        _error = _TextFieldError.tooLong;
+      } else {
+        _error = null;
+      }
+    });
+  }
+
+  String? _getErrorText() {
+    switch (_error) {
+      case _TextFieldError.tooShort:
+        return 'Name too short';
+      case _TextFieldError.tooLong:
+        return 'Name too long';
+      default:
+        return null;
+    }
   }
 }

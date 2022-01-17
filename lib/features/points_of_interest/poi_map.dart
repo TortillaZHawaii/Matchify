@@ -62,7 +62,7 @@ class _PoiMapState extends State<PoiMap> {
             zoomControlsEnabled: false,
             mapToolbarEnabled: false,
             markers: _generateMarkersFromPois(widget.pois),
-            onTap: (_) => _unselectPoi(),
+            onTap: (_) => _unselectPoiAndCreated(),
             onLongPress: (latLng) => _createPoi(latLng),
             onMapCreated: (controller) {
               if (_controller != controller) {
@@ -141,11 +141,12 @@ class _PoiMapState extends State<PoiMap> {
   void _createPoi(LatLng position) {
     setState(() {
       _creatingPoiPosition = position;
+      BlocProvider.of<PoiCubit>(context).unselectPoi();
     });
-    _setMapToLocation(position);
+    _setMapToLocationWithoutZoom(position);
   }
 
-  void _unselectPoi() {
+  void _unselectPoiAndCreated() {
     setState(() {
       _creatingPoiPosition = null;
     });
@@ -153,7 +154,7 @@ class _PoiMapState extends State<PoiMap> {
   }
 
   void _goToListView() {
-    _unselectPoi();
+    _unselectPoiAndCreated();
     widget.swap?.call();
   }
 
@@ -167,6 +168,18 @@ class _PoiMapState extends State<PoiMap> {
       _cameraPosition = CameraPosition(
         target: location,
         zoom: _zoom,
+      );
+    });
+    _controller?.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
+  }
+
+  void _setMapToLocationWithoutZoom(LatLng location) {
+    setState(() {
+      _cameraPosition = CameraPosition(
+        target: location,
+        zoom: _cameraPosition.zoom,
+        bearing: _cameraPosition.bearing,
+        tilt: _cameraPosition.tilt,
       );
     });
     _controller?.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
@@ -221,7 +234,10 @@ class _PoiMapState extends State<PoiMap> {
 
   void _selectAndGoToPoi(PointOfInterest poi) async {
     BlocProvider.of<PoiCubit>(context).selectPoi(poi);
-    _setMapToPoi(poi);
+    setState(() {
+      _creatingPoiPosition = null;
+      _setMapToPoi(poi);
+    });
   }
 
   @override

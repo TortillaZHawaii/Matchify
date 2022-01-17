@@ -165,24 +165,15 @@ class OrderChip extends StatelessWidget {
         ),
       ),
       itemBuilder: (context) => <PopupMenuEntry>[
-        PopupMenuItem(
-          onTap: () => poiCubit.changeArgument(
-            argument.copyWith(order: PoiOrder.distance),
+        for (final order in PoiOrder.values)
+          PopupMenuItem(
+            onTap: () =>
+                poiCubit.changeArgument(argument.copyWith(order: order)),
+            child: SelectableTile(
+              isSelected: argument.order == order,
+              title: order.name.capitalize(),
+            ),
           ),
-          child: SelectableTile(
-            title: 'Distance',
-            isSelected: argument.order == PoiOrder.distance,
-          ),
-        ),
-        PopupMenuItem(
-          onTap: () => poiCubit.changeArgument(
-            argument.copyWith(order: PoiOrder.name),
-          ),
-          child: SelectableTile(
-            title: 'Name',
-            isSelected: argument.order == PoiOrder.name,
-          ),
-        ),
         const PopupMenuDivider(),
         PopupMenuItem(
           onTap: () => poiCubit.changeArgument(
