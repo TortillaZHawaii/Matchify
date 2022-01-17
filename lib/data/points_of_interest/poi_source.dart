@@ -26,7 +26,12 @@ class PoiSourceFirebase extends PoiSource {
   @override
   Future<List<PointOfInterest>> getPointsOfInterest(
       PoiLocationArgument argument) async {
-    final docs = await _poisRef.get().then((snapshot) => snapshot.docs);
+    final sports = argument.sports.asNameMap().keys.toList();
+
+    final docs = await _poisRef
+        .where('sport', whereIn: sports.isNotEmpty ? sports : null)
+        .get()
+        .then((snapshot) => snapshot.docs);
 
     final list = <PointOfInterest>[];
     for (final doc in docs) {
