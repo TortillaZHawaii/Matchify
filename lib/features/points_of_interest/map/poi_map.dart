@@ -30,7 +30,8 @@ class PoiMap extends StatefulWidget {
   State<PoiMap> createState() => _PoiMapState();
 }
 
-class _PoiMapState extends State<PoiMap> {
+class _PoiMapState extends State<PoiMap>
+    with AutomaticKeepAliveClientMixin<PoiMap> {
   GoogleMapController? _controller;
   late CameraPosition _cameraPosition;
 
@@ -53,6 +54,8 @@ class _PoiMapState extends State<PoiMap> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     if (widget.selectedPoi != null) {
       _setMapToPoi(widget.selectedPoi!);
     }
@@ -135,6 +138,7 @@ class _PoiMapState extends State<PoiMap> {
       floatingActionButton:
           widget.selectedPoi != null || _creatingPoiPosition != null
               ? FloatingActionButton(
+                  heroTag: const Key('poi-to-list-fab'),
                   onPressed: _goToListView,
                   child: const Icon(Icons.list),
                 )
@@ -145,6 +149,7 @@ class _PoiMapState extends State<PoiMap> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: FloatingActionButton(
+                        heroTag: const Key('location-fab'),
                         onPressed: () => _setMapToCurrentLocation(),
                         child: BlinkingLocationIcon(
                           loading: _isSettingToCurrentLocation,
@@ -153,6 +158,7 @@ class _PoiMapState extends State<PoiMap> {
                       ),
                     ),
                     FloatingActionButton.extended(
+                      heroTag: const Key('poi-to-list-fab2'),
                       onPressed: _goToListView,
                       label: const Text('View list'),
                       icon: const Icon(Icons.list),
@@ -170,10 +176,7 @@ class _PoiMapState extends State<PoiMap> {
               },
             )
           : (widget.selectedPoi != null
-              ? Hero(
-                  tag: widget.selectedPoi!.id,
-                  child: PoiDetails(poi: widget.selectedPoi!),
-                )
+              ? PoiDetails(poi: widget.selectedPoi!)
               : null),
     );
   }
@@ -186,11 +189,11 @@ class _PoiMapState extends State<PoiMap> {
     _setMapToLocationWithoutZoom(position);
   }
 
-  void _unselectPoiAndCreated() {
+  void _unselectPoiAndCreated() async {
     setState(() {
       _creatingPoiPosition = null;
     });
-    BlocProvider.of<PoiCubit>(context).unselectPoi();
+    await BlocProvider.of<PoiCubit>(context).unselectPoi();
   }
 
   void _goToListView() {
@@ -307,4 +310,7 @@ class _PoiMapState extends State<PoiMap> {
     _controller = null;
     super.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

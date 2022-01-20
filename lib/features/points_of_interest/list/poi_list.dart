@@ -31,12 +31,9 @@ class PoiList extends StatelessWidget {
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     final poi = pois[index];
-                    return Hero(
-                      tag: poi.id,
-                      child: PoiItemTile(
-                        onTap: () => _selectPoi(poi, context),
-                        poi: poi,
-                      ),
+                    return PoiItemTile(
+                      onTap: () => _selectPoi(poi, context),
+                      poi: poi,
                     );
                   },
                   separatorBuilder: (context, index) => const Divider(
@@ -51,6 +48,7 @@ class PoiList extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'poi_list_fab',
         onPressed: () => _goToMapView(context),
         label: const Text('View map'),
         icon: const Icon(Icons.map),
