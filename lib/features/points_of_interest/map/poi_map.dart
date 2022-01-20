@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
+import 'package:matchify/features/points_of_interest/map/blinking_location_icon.dart';
 import 'package:matchify/features/points_of_interest/map/poi_marker.dart';
 import 'package:matchify/features/points_of_interest/common/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/map/bottom_sheets/poi_create_card.dart';
@@ -15,9 +16,15 @@ class PoiMap extends StatefulWidget {
   final PointOfInterest? selectedPoi;
   final List<PointOfInterest> pois;
   final Function()? swap;
+  final LatLng initialLocation;
 
-  const PoiMap({Key? key, this.selectedPoi, required this.pois, this.swap})
-      : super(key: key);
+  const PoiMap({
+    Key? key,
+    this.selectedPoi,
+    required this.pois,
+    this.swap,
+    required this.initialLocation,
+  }) : super(key: key);
 
   @override
   State<PoiMap> createState() => _PoiMapState();
@@ -25,12 +32,24 @@ class PoiMap extends StatefulWidget {
 
 class _PoiMapState extends State<PoiMap> {
   GoogleMapController? _controller;
-  CameraPosition _cameraPosition = const CameraPosition(target: LatLng(0, 0));
+  late CameraPosition _cameraPosition;
+
+  final double _initialZoom = 13;
 
   bool _isSatelliteView = false;
+  bool _needsRefreshing = false;
   LatLng? _creatingPoiPosition;
 
   final double _zoom = 15;
+
+  @override
+  void initState() {
+    super.initState();
+    _cameraPosition = CameraPosition(
+      target: widget.initialLocation,
+      zoom: _initialZoom,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,23 +89,45 @@ class _PoiMapState extends State<PoiMap> {
               }
               _controller = controller;
             },
-            onCameraMove: (position) => _cameraPosition = position,
+            onCameraMove: (position) {
+              _cameraPosition = position;
+              final poiState = poiCubit.state as PoiStateWithArgument;
+              final argPos = poiState.argument.latLng;
+              if (!_needsRefreshing &&
+                  _isCameraTooFarFromArgument(_cameraPosition.target, argPos)) {
+                setState(() {
+                  _needsRefreshing = true;
+                });
+              }
+            },
           ),
+          if (poiCubit.state is LoadingState) const LinearProgressIndicator(),
           Column(
             children: [
               PoiFilters(
                 argument: (poiCubit.state as PoiStateWithArgument).argument,
               ),
-              // if (_needsRefreshing)
-              //   Align(
-              //     alignment: Alignment.topCenter,
-              //     child: InkWell(
-              //       child: const Chip(
-              //         label: Text('Refresh'),
-              //       ),
-              //       onTap: _updatePois,
-              //     ),
-              //   ),
+              if (_needsRefreshing)
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: InkWell(
+                    child: const Chip(
+                      label: Text('Refresh'),
+                    ),
+                    onTap: () {
+                      poiCubit.changeArgumentAndReload(
+                        (poiCubit.state as PoiStateWithArgument)
+                            .argument
+                            .copyWith(
+                              latLng: _cameraPosition.target,
+                            ),
+                      );
+                      setState(() {
+                        _needsRefreshing = false;
+                      });
+                    },
+                  ),
+                ),
             ],
           ),
         ],
@@ -105,9 +146,8 @@ class _PoiMapState extends State<PoiMap> {
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: FloatingActionButton(
                         onPressed: () => _setMapToCurrentLocation(),
-                        child: Icon(
-                          Icons.location_searching,
-                          color: Theme.of(context).colorScheme.onSurface,
+                        child: BlinkingLocationIcon(
+                          loading: _isSettingToCurrentLocation,
                         ),
                         backgroundColor: Theme.of(context).colorScheme.surface,
                       ),
@@ -173,6 +213,19 @@ class _PoiMapState extends State<PoiMap> {
     _controller?.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
   }
 
+  bool _isCameraTooFarFromArgument(LatLng currentPos, LatLng argumentPos) {
+    final distanceSqrd = cartesianDistanceSqrd(currentPos, argumentPos);
+    const maxDistance = 0.2;
+
+    return distanceSqrd > maxDistance * maxDistance;
+  }
+
+  static double cartesianDistanceSqrd(LatLng a, LatLng b) {
+    final dx = a.latitude - b.latitude;
+    final dy = a.longitude - b.longitude;
+    return dx * dx + dy * dy;
+  }
+
   void _setMapToLocationWithoutZoom(LatLng location) {
     setState(() {
       _cameraPosition = CameraPosition(
@@ -185,13 +238,21 @@ class _PoiMapState extends State<PoiMap> {
     _controller?.animateCamera(CameraUpdate.newCameraPosition(_cameraPosition));
   }
 
+  bool _isSettingToCurrentLocation = false;
+
   void _setMapToCurrentLocation() async {
     final locationSource = LocationSource();
     try {
       // start animation
+      setState(() {
+        _isSettingToCurrentLocation = true;
+      });
       final newPosition = await locationSource.getCurrentPosition();
       // stop animation
-      _setMapToLocation(newPosition);
+      setState(() {
+        _isSettingToCurrentLocation = false;
+        _setMapToLocation(newPosition);
+      });
     } on PermissionDeniedException {
       final permissions = await locationSource.requestPermission();
 

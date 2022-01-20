@@ -89,17 +89,11 @@ void main() {
     late PoiCubit poiCubit;
 
     late PoiLocationArgument argument1;
-    late PoiLocationArgument argument2;
-
     late List<PointOfInterest> freshPois;
 
     setUp(() {
       argument1 = PoiLocationArgument(
         latLng: const LatLng(21, 37),
-      );
-      argument2 = PoiLocationArgument(
-        latLng: const LatLng(-21, -37),
-        sports: {Sports.football, Sports.basketball},
       );
 
       poiSource = PoiSourceMock();
@@ -166,7 +160,7 @@ void main() {
 
         return poiCubit;
       },
-      act: (PoiCubit cubit) => cubit.changeArgument(argument1),
+      act: (PoiCubit cubit) => cubit.changeArgumentAndReload(argument1),
       expect: () => [
         isA<ChangedArgumentState>().having(
           (state) => state.argument,

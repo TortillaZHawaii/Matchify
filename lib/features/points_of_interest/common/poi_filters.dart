@@ -63,7 +63,7 @@ class PoiFilters extends StatelessWidget {
       set.add(sport);
     }
 
-    poiCubit.changeArgument(argument.copyWith(sports: set));
+    poiCubit.changeArgumentAndReload(argument.copyWith(sports: set));
   }
 }
 
@@ -112,7 +112,7 @@ class BusyChip extends StatelessWidget {
       set.add(busy);
     }
 
-    poiCubit.changeArgument(argument.copyWith(busyness: set));
+    poiCubit.changeArgumentAndReload(argument.copyWith(busyness: set));
   }
 }
 
@@ -140,8 +140,8 @@ class OrderChip extends StatelessWidget {
       itemBuilder: (context) => <PopupMenuEntry>[
         for (final order in PoiOrder.values)
           PopupMenuItem(
-            onTap: () =>
-                poiCubit.changeArgument(argument.copyWith(order: order)),
+            onTap: () => poiCubit
+                .changeArgumentAndReload(argument.copyWith(order: order)),
             child: SelectableTile(
               isSelected: argument.order == order,
               title: order.name.capitalize(),
@@ -149,7 +149,7 @@ class OrderChip extends StatelessWidget {
           ),
         const PopupMenuDivider(),
         PopupMenuItem(
-          onTap: () => poiCubit.changeArgument(
+          onTap: () => poiCubit.changeArgumentAndReload(
             argument.copyWith(isDescending: false),
           ),
           child: SelectableTile(
@@ -158,7 +158,7 @@ class OrderChip extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: () => poiCubit.changeArgument(
+          onTap: () => poiCubit.changeArgumentAndReload(
             argument.copyWith(isDescending: true),
           ),
           child: SelectableTile(

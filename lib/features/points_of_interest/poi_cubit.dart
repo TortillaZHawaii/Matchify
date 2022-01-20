@@ -32,7 +32,7 @@ class PoiCubit extends Cubit<PoiState> {
     emit(FreshDataState(pois: newPois, argument: argument));
   }
 
-  Future<void> changeArgument(PoiLocationArgument argument) async {
+  Future<void> changeArgumentAndReload(PoiLocationArgument argument) async {
     emit(ChangedArgumentState(pois: state.pois, argument: argument));
     reloadPois(argument);
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:matchify/features/points_of_interest/list/poi_list.dart';
@@ -36,10 +37,15 @@ class _PoiEntryState extends State<PoiEntry> {
             _isListView = false;
           }
 
+          final initialLocation = state is PoiStateWithArgument
+              ? state.argument.latLng
+              : const LatLng(0, 0);
+
           return Navigator(
             pages: [
               MaterialPage(
                 child: PoiMap(
+                  initialLocation: initialLocation,
                   pois: pois,
                   selectedPoi: selectedPoi,
                   swap: _swapView,

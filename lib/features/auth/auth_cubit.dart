@@ -21,7 +21,6 @@ class AuthCubit extends Cubit<AuthState> {
     String password,
   ) async {
     emit(const SigningInState());
-    await Future.delayed(const Duration(seconds: 1));
 
     try {
       final res = await authService.signInWithEmail(email, password);

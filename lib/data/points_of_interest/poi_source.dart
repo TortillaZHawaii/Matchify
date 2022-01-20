@@ -25,7 +25,8 @@ class PoiSourceFirebase extends PoiSource {
 
   @override
   Future<List<PointOfInterest>> getPointsOfInterest(
-      PoiLocationArgument argument) async {
+      PoiLocationArgument argument,
+      {LatLng? currentLocation}) async {
     //
     // Firebase rant:
     //
@@ -42,6 +43,8 @@ class PoiSourceFirebase extends PoiSource {
     // This could be done with MongoDB. But since this subject is oriented
     // around mobile, I don't want to implement it now.
     //
+
+    // on the server
 
     final sports = argument.sports.asNameMap().keys.toList();
     //final busyness = argument.busyness.asNameMap().keys.toList();
@@ -61,7 +64,31 @@ class PoiSourceFirebase extends PoiSource {
       list.add(doc.data());
     }
 
+    // on the client,
+
+    if (argument.order == PoiOrder.distance && currentLocation != null) {
+      list.sort((PointOfInterest a, PointOfInterest b) {
+        final distanceA = cartesianDistanceSqrd(currentLocation, a.latLng);
+        final distanceB = cartesianDistanceSqrd(currentLocation, b.latLng);
+
+        if (argument.isDescending) {
+          return distanceA.compareTo(distanceB);
+        } else {
+          return distanceB.compareTo(distanceA);
+        }
+      });
+    }
+
+    list.removeWhere(
+        (element) => !argument.busyness.contains(element.busyiness));
+
     return list;
+  }
+
+  static double cartesianDistanceSqrd(LatLng a, LatLng b) {
+    final dx = a.latitude - b.latitude;
+    final dy = a.longitude - b.longitude;
+    return dx * dx + dy * dy;
   }
 
   @override
@@ -108,12 +135,7 @@ class PoiLocationArgument {
     bool? isDescending,
     Set<Busyness>? busyness,
   })  : sports = sports ?? {},
-        busyness = busyness ??
-            {
-              Busyness.free,
-              Busyness.moderate,
-              Busyness.busy,
-            },
+        busyness = busyness ?? Busyness.values.toSet(),
         radius = radius ?? 0.4,
         order = order ?? PoiOrder.distance,
         isDescending = isDescending ?? true;
