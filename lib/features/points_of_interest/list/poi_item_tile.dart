@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
-import 'package:matchify/data/points_of_interest/model/sports.dart';
-import 'package:matchify/features/utils/string_extensions.dart';
+import 'package:matchify/features/common/string_extensions.dart';
+
+import '../common/sports_icon_factory.dart';
 
 class PoiItemTile extends StatelessWidget {
   final PointOfInterest poi;
@@ -43,19 +44,5 @@ class PoiItemTileSubtitle extends StatelessWidget {
     return Text(
       busyness.name.capitalize(),
     );
-  }
-}
-
-class SportsIconFactory {
-  static IconData getIconData(Sports sport) {
-    switch (sport) {
-      case Sports.football:
-        return Icons.sports_soccer;
-      case Sports.basketball:
-        return Icons.sports_basketball;
-      case Sports.other:
-      default:
-        return Icons.sports;
-    }
   }
 }

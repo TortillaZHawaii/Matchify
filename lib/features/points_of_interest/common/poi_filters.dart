@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/model/sports.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
+import 'package:matchify/features/points_of_interest/common/sports_icon_factory.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
-import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
-import 'package:matchify/features/utils/string_extensions.dart';
+import 'package:matchify/features/common/string_extensions.dart';
 
 class PoiFilters extends StatelessWidget {
   final PoiLocationArgument argument;
@@ -99,33 +99,6 @@ class BusyChip extends StatelessWidget {
               title: busyness.name.capitalize(),
             ),
           ),
-        // PopupMenuItem(
-        //   onTap: () {
-        //     _toggleBusyInCubit(Busyness.busy, poiCubit);
-        //   },
-        //   child: SelectableTile(
-        //     isSelected: argument.busyness.contains(Busyness.busy),
-        //     title: 'Busy',
-        //   ),
-        // ),
-        // PopupMenuItem(
-        //   onTap: () {
-        //     _toggleBusyInCubit(Busyness.moderate, poiCubit);
-        //   },
-        //   child: SelectableTile(
-        //     isSelected: argument.busyness.contains(Busyness.moderate),
-        //     title: 'Moderate',
-        //   ),
-        // ),
-        // PopupMenuItem(
-        //   onTap: () {
-        //     _toggleBusyInCubit(Busyness.free, poiCubit);
-        //   },
-        //   child: SelectableTile(
-        //     isSelected: argument.busyness.contains(Busyness.free),
-        //     title: 'Empty',
-        //   ),
-        // ),
       ],
     );
   }

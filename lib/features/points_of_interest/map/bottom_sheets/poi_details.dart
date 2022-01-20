@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/maps_launcher.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
-import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
+import 'package:matchify/features/points_of_interest/list/poi_item_tile.dart';
 import 'package:share_plus/share_plus.dart';
 
 class PoiDetails extends StatelessWidget {

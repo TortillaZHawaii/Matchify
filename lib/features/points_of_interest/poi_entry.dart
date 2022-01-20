@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
-import 'package:matchify/features/points_of_interest/poi_list.dart';
-import 'package:matchify/features/points_of_interest/poi_map.dart';
+import 'package:matchify/features/points_of_interest/list/poi_list.dart';
+import 'package:matchify/features/points_of_interest/map/poi_map.dart';
 
 class PoiEntry extends StatefulWidget {
   const PoiEntry({Key? key}) : super(key: key);

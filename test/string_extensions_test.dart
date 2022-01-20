@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:matchify/features/utils/string_extensions.dart';
+import 'package:matchify/features/common/string_extensions.dart';
 
 void main() {
   group(

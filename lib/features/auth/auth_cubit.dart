@@ -31,18 +31,29 @@ class AuthCubit extends Cubit<AuthState> {
           emit(const SignedInState());
           break;
         case SignInResult.emailAlreadyInUse:
-          emit(const SignedOutState(
-              error: 'This email address is already in use.'));
+          emit(
+            const SignedOutState(
+              error: 'This email address is already in use.',
+            ),
+          );
           break;
         case SignInResult.userDisabled:
-          emit(const SignedOutState(error: 'This user has been banned.'));
+          emit(
+            const SignedOutState(
+              error: 'This user has been banned.',
+            ),
+          );
           break;
         case SignInResult.userNotFound:
           await _trySignUp(email, password);
           break;
         case SignInResult.invalidEmail:
         case SignInResult.wrongPassword:
-          emit(const SignedOutState(error: 'Invalid credentials.'));
+          emit(
+            const SignedOutState(
+              error: 'Invalid credentials.',
+            ),
+          );
           break;
       }
     } catch (_) {

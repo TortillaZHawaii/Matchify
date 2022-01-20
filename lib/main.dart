@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/features/theme_provider.dart';
-import 'package:matchify/features/utils/pages/error_page.dart';
+import 'package:matchify/features/common/pages/error_page.dart';
 import 'package:matchify/data/auth/auth_service.dart';
 import 'package:provider/provider.dart';
 
 import 'features/auth/auth_cubit.dart';
 import 'features/auth/auth_gate.dart';
-import 'features/utils/pages/loading.dart';
+import 'features/common/pages/loading.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

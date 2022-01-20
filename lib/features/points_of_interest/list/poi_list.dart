@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
-import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
+import 'package:matchify/features/points_of_interest/common/poi_app_bar.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
-import 'package:matchify/features/points_of_interest/poi_filters.dart';
-import 'package:matchify/features/points_of_interest/poi_item_tile.dart';
+import 'package:matchify/features/points_of_interest/common/poi_filters.dart';
+import 'package:matchify/features/points_of_interest/list/poi_item_tile.dart';
 
 class PoiList extends StatelessWidget {
   final List<PointOfInterest> pois;

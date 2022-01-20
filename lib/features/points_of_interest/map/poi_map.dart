@@ -4,11 +4,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
-import 'package:matchify/features/points_of_interest/poi_app_bar.dart';
-import 'package:matchify/features/points_of_interest/poi_create_card.dart';
+import 'package:matchify/features/points_of_interest/map/poi_marker.dart';
+import 'package:matchify/features/points_of_interest/common/poi_app_bar.dart';
+import 'package:matchify/features/points_of_interest/map/bottom_sheets/poi_create_card.dart';
 import 'package:matchify/features/points_of_interest/poi_cubit.dart';
-import 'package:matchify/features/points_of_interest/poi_details.dart';
-import 'package:matchify/features/points_of_interest/poi_filters.dart';
+import 'package:matchify/features/points_of_interest/map/bottom_sheets/poi_details.dart';
+import 'package:matchify/features/points_of_interest/common/poi_filters.dart';
 
 class PoiMap extends StatefulWidget {
   final PointOfInterest? selectedPoi;
@@ -245,18 +246,4 @@ class _PoiMapState extends State<PoiMap> {
     _controller = null;
     super.dispose();
   }
-}
-
-class PoiMarker extends Marker {
-  PoiMarker(
-      {required PointOfInterest poi,
-      void Function(PointOfInterest)? poiFunction})
-      : super(
-          markerId: MarkerId(poi.id),
-          position: poi.latLng,
-          infoWindow: InfoWindow(
-            title: poi.name,
-          ),
-          onTap: () => poiFunction?.call(poi),
-        );
 }
