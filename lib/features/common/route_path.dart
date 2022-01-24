@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:matchify/data/points_of_interest/location_source.dart';
 import 'package:matchify/data/points_of_interest/model/point_of_interest.dart';
 import 'package:matchify/data/points_of_interest/poi_source.dart';
 import 'package:matchify/features/auth/auth_cubit.dart';
@@ -76,7 +77,10 @@ class MatchifyRouterDelegate extends RouterDelegate<RoutePath>
           final pois = poiState.pois;
 
           if (isSignedIn && poiState is InitialState) {
-            BlocProvider.of<PoiCubit>(context).firstLoad();
+            final pos =
+                LocationSource().getCurrentPositionWithHandling(context);
+
+            BlocProvider.of<PoiCubit>(context).firstLoad(pos);
             return const Center(
               child: CircularProgressIndicator(),
             );

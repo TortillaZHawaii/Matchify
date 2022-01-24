@@ -11,8 +11,8 @@ class PoiCubit extends Cubit<PoiState> {
 
   final PoiSource _dataSource;
 
-  Future<void> firstLoad() async {
-    final pos = await LocationSource().getCurrentPosition();
+  Future<void> firstLoad(Future<LatLng> firstPosition) async {
+    final pos = await firstPosition;
     reloadPois(PoiLocationArgument(latLng: pos));
   }
 

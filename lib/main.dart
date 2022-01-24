@@ -63,6 +63,7 @@ class _AppState extends State<App> {
                 ),
               ),
               Provider(
+                // not casting causes errors in context.read()
                 create: (_) => PoiSourceFirebase() as PoiSource,
               ),
               BlocProvider(

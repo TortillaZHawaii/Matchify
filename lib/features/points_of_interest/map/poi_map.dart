@@ -160,7 +160,7 @@ class _PoiMapState extends State<PoiMap>
                       ),
                     ),
                     FloatingActionButton.extended(
-                      heroTag: const Key('poi-to-list-fab2'),
+                      heroTag: const Key('poi-to-list-fab'),
                       onPressed: _goToListView,
                       label: const Text('View list'),
                       icon: const Icon(Icons.list),
@@ -274,6 +274,11 @@ class _PoiMapState extends State<PoiMap>
           ),
         );
       }
+
+      // stop animation
+      setState(() {
+        _isSettingToCurrentLocation = false;
+      });
     }
   }
 
