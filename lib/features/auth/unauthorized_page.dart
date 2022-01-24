@@ -89,7 +89,6 @@ class _SignInButton extends StatelessWidget {
                   dimension: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
                   ),
                 ),
           onPressed: state is SignedOutState
@@ -98,10 +97,6 @@ class _SignInButton extends StatelessWidget {
                     password.text,
                   )
               : null,
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.blue),
-            foregroundColor: MaterialStateProperty.all(Colors.white),
-          ),
         );
       },
     );

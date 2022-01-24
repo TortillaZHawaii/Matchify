@@ -47,21 +47,6 @@ class PoiCubit extends Cubit<PoiState> {
     }
   }
 
-  Future<void> selectPoi(PointOfInterest poi) async {
-    if (state is PoiStateWithArgument) {
-      final argument = (state as PoiStateWithArgument).argument;
-      emit(SelectedPoiState(
-          selected: poi, pois: state.pois, argument: argument));
-    }
-  }
-
-  Future<void> unselectPoi() async {
-    if (state is SelectedPoiState) {
-      final argument = (state as PoiStateWithArgument).argument;
-      emit(UnselectedPoiState(pois: state.pois, argument: argument));
-    }
-  }
-
   Future<void> addPoi(PointOfInterest poi) async {
     await _dataSource.addPointOfInterest(poi);
   }

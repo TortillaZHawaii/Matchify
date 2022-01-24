@@ -9,8 +9,14 @@ import 'package:matchify/features/points_of_interest/list/poi_item_tile.dart';
 class PoiList extends StatelessWidget {
   final List<PointOfInterest> pois;
   final Function()? swap;
+  final Function(PointOfInterest? poi) selectPoi;
 
-  const PoiList({Key? key, required this.pois, this.swap}) : super(key: key);
+  const PoiList({
+    Key? key,
+    required this.pois,
+    required this.selectPoi,
+    this.swap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +37,12 @@ class PoiList extends StatelessWidget {
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     final poi = pois[index];
-                    return PoiItemTile(
-                      onTap: () => _selectPoi(poi, context),
-                      poi: poi,
+                    return Hero(
+                      tag: poi.id,
+                      child: PoiItemTile(
+                        onTap: () => selectPoi(poi),
+                        poi: poi,
+                      ),
                     );
                   },
                   separatorBuilder: (context, index) => const Divider(
@@ -58,9 +67,5 @@ class PoiList extends StatelessWidget {
 
   void _goToMapView(BuildContext context) {
     swap?.call();
-  }
-
-  void _selectPoi(PointOfInterest poi, BuildContext context) {
-    BlocProvider.of<PoiCubit>(context).selectPoi(poi);
   }
 }

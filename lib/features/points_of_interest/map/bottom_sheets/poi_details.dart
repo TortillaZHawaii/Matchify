@@ -61,7 +61,7 @@ class PoiDetails extends StatelessWidget {
   }
 
   void _sharePoi(PointOfInterest poi) async {
-    var url = MapsLauncher.getUrl(poi.latLng.latitude, poi.latLng.longitude);
+    var url = 'http://matchify.com/map/${poi.id}';
     var text = 'Join me on ${poi.name} at $url';
     Share.share(text);
   }

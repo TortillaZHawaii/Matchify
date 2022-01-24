@@ -8,6 +8,8 @@ abstract class PoiSource {
   Future<List<PointOfInterest>> getPointsOfInterest(
       PoiLocationArgument argument);
 
+  Future<PointOfInterest?> getPointOfInterest(String id);
+
   Future<void> addPointOfInterest(PointOfInterest poi);
 
   Future<void> setBusyness(PointOfInterest poi, Busyness busyness);
@@ -100,6 +102,11 @@ class PoiSourceFirebase extends PoiSource {
   @override
   Future<void> setBusyness(PointOfInterest poi, Busyness busyness) async {
     _poisRef.doc(poi.id).update({'busyness': busyness.name});
+  }
+
+  @override
+  Future<PointOfInterest?> getPointOfInterest(String id) {
+    return _poisRef.doc(id).get().then((snapshot) => snapshot.data());
   }
 }
 

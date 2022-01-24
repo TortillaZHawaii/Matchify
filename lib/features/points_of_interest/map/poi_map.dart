@@ -15,6 +15,7 @@ import 'package:matchify/features/points_of_interest/common/poi_filters.dart';
 class PoiMap extends StatefulWidget {
   final PointOfInterest? selectedPoi;
   final List<PointOfInterest> pois;
+  final Function(PointOfInterest?) selectPoi;
   final Function()? swap;
   final LatLng initialLocation;
 
@@ -23,6 +24,7 @@ class PoiMap extends StatefulWidget {
     this.selectedPoi,
     required this.pois,
     this.swap,
+    required this.selectPoi,
     required this.initialLocation,
   }) : super(key: key);
 
@@ -176,7 +178,10 @@ class _PoiMapState extends State<PoiMap>
               },
             )
           : (widget.selectedPoi != null
-              ? PoiDetails(poi: widget.selectedPoi!)
+              ? Hero(
+                  tag: widget.selectedPoi!.id,
+                  child: PoiDetails(poi: widget.selectedPoi!),
+                )
               : null),
     );
   }
@@ -184,16 +189,16 @@ class _PoiMapState extends State<PoiMap>
   void _createPoi(LatLng position) {
     setState(() {
       _creatingPoiPosition = position;
-      BlocProvider.of<PoiCubit>(context).unselectPoi();
+      widget.selectPoi(null);
     });
     _setMapToLocationWithoutZoom(position);
   }
 
   void _unselectPoiAndCreated() async {
     setState(() {
+      widget.selectPoi(null);
       _creatingPoiPosition = null;
     });
-    await BlocProvider.of<PoiCubit>(context).unselectPoi();
   }
 
   void _goToListView() {
@@ -281,6 +286,12 @@ class _PoiMapState extends State<PoiMap>
       newMarkers.add(generatedMarker);
     }
 
+    if (widget.selectedPoi != null && !pois.contains(widget.selectedPoi)) {
+      newMarkers.add(
+        PoiMarker(poi: widget.selectedPoi!, poiFunction: _selectAndGoToPoi),
+      );
+    }
+
     if (_creatingPoiPosition != null) {
       final newMarker = Marker(
         markerId: const MarkerId('newPoi'),
@@ -297,7 +308,7 @@ class _PoiMapState extends State<PoiMap>
   }
 
   void _selectAndGoToPoi(PointOfInterest poi) async {
-    BlocProvider.of<PoiCubit>(context).selectPoi(poi);
+    widget.selectPoi(poi);
     setState(() {
       _creatingPoiPosition = null;
       _setMapToPoi(poi);

@@ -212,9 +212,10 @@ class SportChip extends FilterChip {
     required Set<Sports> selectedSports,
     required Function(bool)? onSelected,
   }) : super(
-            key: key,
-            label: Text(SportsFactory.getSportsName(sport)),
-            avatar: Icon(SportsIconFactory.getIconData(sport)),
-            selected: selectedSports.contains(sport),
-            onSelected: onSelected);
+          key: key,
+          label: Text(SportsFactory.getSportsName(sport)),
+          avatar: Icon(SportsIconFactory.getIconData(sport)),
+          selected: selectedSports.contains(sport),
+          onSelected: onSelected,
+        );
 }

@@ -14,7 +14,6 @@ import 'package:matchify/features/points_of_interest/poi_cubit.dart';
 import 'package:provider/provider.dart';
 
 import 'features/auth/auth_cubit.dart';
-import 'features/auth/auth_gate.dart';
 import 'features/common/pages/loading.dart';
 import 'features/common/theme_provider.dart';
 
@@ -71,13 +70,17 @@ class _AppState extends State<App> {
                 ),
               ),
             ],
-            child: MaterialApp.router(
-              title: 'Matchify',
-              key: const Key('app'),
-              theme: kReleaseMode ? _matchifyTheme : ThemeProvider.buildTheme(),
-              routeInformationParser: MatchifyRouteInformationParser(),
-              routerDelegate: MatchifyRouterDelegate(),
-            ),
+            builder: (ctx, child) {
+              final PoiSource poiSource = ctx.read();
+              return MaterialApp.router(
+                title: 'Matchify',
+                key: const Key('app'),
+                theme:
+                    kReleaseMode ? _matchifyTheme : ThemeProvider.buildTheme(),
+                routeInformationParser: MatchifyRouteInformationParser(),
+                routerDelegate: MatchifyRouterDelegate(poiSource: poiSource),
+              );
+            },
           );
         }
 
