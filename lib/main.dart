@@ -46,7 +46,13 @@ class _AppState extends State<App> {
     return FutureBuilder(
       future: _initialization,
       builder: (context, snapshot) {
-        if (snapshot.hasError) return const ErrorPage();
+        if (snapshot.hasError) {
+          return MaterialApp(
+            title: 'Matchify',
+            theme: _matchifyTheme,
+            home: const ErrorPage(),
+          );
+        }
 
         if (snapshot.connectionState == ConnectionState.done) {
           return MultiProvider(
@@ -84,7 +90,11 @@ class _AppState extends State<App> {
           );
         }
 
-        return const Loading();
+        return MaterialApp(
+          theme: _matchifyTheme,
+          title: 'Matchify',
+          home: const Loading(),
+        );
       },
     );
   }

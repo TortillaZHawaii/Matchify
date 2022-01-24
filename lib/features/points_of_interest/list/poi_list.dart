@@ -37,12 +37,9 @@ class PoiList extends StatelessWidget {
                 child: ListView.separated(
                   itemBuilder: (context, index) {
                     final poi = pois[index];
-                    return Hero(
-                      tag: poi.id,
-                      child: PoiItemTile(
-                        onTap: () => selectPoi(poi),
-                        poi: poi,
-                      ),
+                    return PoiItemTile(
+                      onTap: () => selectPoi(poi),
+                      poi: poi,
                     );
                   },
                   separatorBuilder: (context, index) => const Divider(

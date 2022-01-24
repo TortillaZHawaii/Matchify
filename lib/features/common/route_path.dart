@@ -152,6 +152,9 @@ class MatchifyRouterDelegate extends RouterDelegate<RoutePath>
 
   void _swapView() async {
     displayList = !displayList;
+    if (selectedPoi != null) {
+      selectedPoi = null;
+    }
     notifyListeners();
   }
 
