@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,7 +8,9 @@ class LocationSource {
   Future<LatLng> getCurrentPosition() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low);
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 5),
+      );
 
       final output = LatLng(position.latitude, position.longitude);
 
@@ -32,6 +36,8 @@ class LocationSource {
       } else {
         return await getCurrentPosition();
       }
+    } on TimeoutException {
+      return const LatLng(54.107941, 22.929369);
     }
 
     return const LatLng(54.107941, 22.929369);

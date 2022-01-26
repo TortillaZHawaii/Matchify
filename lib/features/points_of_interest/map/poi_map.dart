@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -274,6 +276,19 @@ class _PoiMapState extends State<PoiMap>
           ),
         );
       }
+
+      // stop animation
+      setState(() {
+        _isSettingToCurrentLocation = false;
+      });
+    } on TimeoutException {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+          title: Text('Location timeout'),
+          content: Text('Please try again later'),
+        ),
+      );
 
       // stop animation
       setState(() {
