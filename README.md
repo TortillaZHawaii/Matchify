@@ -68,7 +68,7 @@ Project was only tested on an Android.
             "sport": "other", // String
             "latLng": [54.09065298628576, 22.923175804316998], // Geopoint
             "busyness": "unknown", // String
-        }
+        },
     }
 }
 ```

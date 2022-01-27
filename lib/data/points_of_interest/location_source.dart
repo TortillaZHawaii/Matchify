@@ -34,7 +34,11 @@ class LocationSource {
       if (permissions == LocationPermission.denied ||
           permissions == LocationPermission.deniedForever) {
       } else {
-        return await getCurrentPosition();
+        try {
+          return await getCurrentPosition();
+        } on TimeoutException {
+          return const LatLng(54.107941, 22.929369);
+        }
       }
     } on TimeoutException {
       return const LatLng(54.107941, 22.929369);
