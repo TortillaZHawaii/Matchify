@@ -136,6 +136,10 @@ class MatchifyRouterDelegate extends RouterDelegate<RoutePath>
               if (selectedPoi != null) {
                 selectedPoi = null;
               }
+
+              if (error != null) {
+                error = null;
+              }
               notifyListeners();
 
               return true;
